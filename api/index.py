@@ -89,10 +89,7 @@ def get_appointments(user_id: str):
     res = supabase.table("appointments").select("*").eq("patient_id", user_id).execute()
     return res.data
 
-# Frontend routes
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
-app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
-
-@app.get("/{full_path:path}")
-def serve_spa(full_path: str):
-    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
+# Root check for Vercel
+@app.get("/api")
+def api_root():
+    return {"status": "MediConnect API is running."}
