@@ -20,8 +20,9 @@ app.add_middleware(
 # API Routes
 @app.post("/api/auth/signup")
 def signup(req: SignupRequest):
+    email_str = f"{req.username}@mediconnect.app"
     res = supabase.auth.sign_up({
-        "email": req.email,
+        "email": email_str,
         "password": req.password,
         "options": {"data": {"name": req.name, "role": req.role}}
     })
@@ -33,7 +34,7 @@ def signup(req: SignupRequest):
     supabase.table("profiles").insert({
         "id": res.user.id,
         "name": req.name,
-        "email": req.email,
+        "email": email_str,
         "role": req.role
     }).execute()
 
@@ -41,8 +42,9 @@ def signup(req: SignupRequest):
 
 @app.post("/api/auth/login")
 def login(req: LoginRequest):
+    email_str = f"{req.username}@mediconnect.app"
     res = supabase.auth.sign_in_with_password({
-        "email": req.email,
+        "email": email_str,
         "password": req.password
     })
     if not res.session:

@@ -189,7 +189,7 @@
 
         const AuthView = () => {
             const [isLogin, setIsLogin] = useState(true);
-            const [email, setEmail] = useState('');
+            const [username, setUsername] = useState('');
             const [password, setPassword] = useState('');
             const [name, setName] = useState('');
             const [role, setRole] = useState('patient');
@@ -203,18 +203,19 @@
 
                 try {
                     let result;
+                    const emailString = username + '@mediconnect.app';
                     if (isLogin) {
-                        result = await supabase.auth.signInWithPassword({ email, password });
+                        result = await supabase.auth.signInWithPassword({ email: emailString, password });
                     } else {
                         result = await supabase.auth.signUp({
-                            email, password,
+                            email: emailString, password,
                             options: { data: { name, role } }
                         });
 
                         // Wait slightly for trigger/insert
                         if (result.data.user) {
                             await supabase.from('profiles').insert([
-                                { id: result.data.user.id, name, email, role }
+                                { id: result.data.user.id, name, email: emailString, role }
                             ]).select();
                         }
                     }
@@ -241,7 +242,7 @@
                             <input type="text" placeholder="Full Name" required value={name} onChange={e => setName(e.target.value)}
                                 className="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-primary transition-all" />
                         )}
-                        <input type="email" placeholder="Email Address" required value={email} onChange={e => setEmail(e.target.value)}
+                        <input type="text" placeholder="Username" required value={username} onChange={e => setUsername(e.target.value)}
                             className="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-primary transition-all" />
                         <input type="password" placeholder="Password" required value={password} onChange={e => setPassword(e.target.value)}
                             className="w-full px-5 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:ring-2 focus:ring-primary transition-all" />

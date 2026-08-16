@@ -1,14 +1,14 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from typing import Optional, List
 
 class SignupRequest(BaseModel):
-    email: EmailStr
+    username: str
     password: str
     name: str
     role: str = "patient" # patient or doctor
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    username: str
     password: str
 
 class AppointmentRequest(BaseModel):
