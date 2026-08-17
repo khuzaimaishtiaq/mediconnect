@@ -26,9 +26,10 @@ const App = () => {
             {currentView === 'auth' && <AuthView />}
             {currentView === 'home' && <HomeView user={user} setView={setCurrentView} />}
             {currentView === 'doctors' && <DoctorsDirectory setView={setCurrentView} />}
+            {currentView === 'appointments' && <AppointmentsView user={user} setView={setCurrentView} />}
             {currentView === 'profile' && <ProfileView user={user} setView={setCurrentView} />}
 
-            {['home', 'doctors', 'profile'].includes(currentView) && (
+            {['home', 'doctors', 'appointments', 'profile'].includes(currentView) && (
                 <BottomNav current={currentView} setView={setCurrentView} />
             )}
         </div>
@@ -219,13 +220,25 @@ const HomeView = ({ user, setView }) => {
 };
 
 const DoctorsDirectory = ({ setView }) => {
+    const [filter, setFilter] = useState('All Specialists');
+    const categories = ['All Specialists', 'Cardiology', 'Dental', 'Neurology'];
+
+    const allDoctors = [
+        { id: 1, name: 'Dr. Michael Chen', spec: 'Neurology', clinic: 'City Hospital', rating: 4.9, price: '$150/hr' },
+        { id: 2, name: 'Dr. Sarah Jenkins', spec: 'Cardiology', clinic: 'Heart Center', rating: 4.8, price: '$200/hr' },
+        { id: 3, name: 'Dr. James Wilson', spec: 'Dental', clinic: 'Smile Clinic', rating: 4.7, price: '$100/hr' },
+        { id: 4, name: 'Dr. Emily Carter', spec: 'Neurology', clinic: 'Brain Health', rating: 4.9, price: '$160/hr' },
+    ];
+
+    const displayed = filter === 'All Specialists' ? allDoctors : allDoctors.filter(d => d.spec === filter);
+
     return (
         <div className="pb-28 bg-slate-50 min-h-screen">
             <div className="glass-nav pt-14 pb-4 px-6 sticky top-0 z-20">
                 <h2 className="text-3xl font-extrabold text-slate-900 mb-5 animate-fade-up">Find Specialist</h2>
                 <div className="flex gap-3 hide-scrollbar overflow-x-auto pb-2 animate-fade-up delay-100">
-                    {['All Specialists', 'Cardiology', 'Dental', 'Neurology'].map((t, i) => (
-                        <button key={i} className={`px-6 py-3 rounded-[16px] text-sm font-bold whitespace-nowrap transition-all ${i === 0 ? 'gradient-primary text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>
+                    {categories.map((t, i) => (
+                        <button key={i} onClick={() => setFilter(t)} className={`px-6 py-3 rounded-[16px] text-sm font-bold whitespace-nowrap transition-all ${filter === t ? 'gradient-primary text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>
                             {t}
                         </button>
                     ))}
@@ -233,23 +246,48 @@ const DoctorsDirectory = ({ setView }) => {
             </div>
 
             <div className="p-6 flex flex-col gap-5">
-                {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="bg-white p-5 rounded-[28px] shadow-[0_8px_25px_rgba(0,0,0,0.04)] border border-slate-100 flex gap-5 items-center cursor-pointer interactive-card animate-fade-up" style={{ animationDelay: `${i * 100}ms` }}>
+                {displayed.length === 0 && (
+                    <div className="text-center text-slate-400 py-10 font-bold">No specialists found in this category.</div>
+                )}
+                {displayed.map((doc, i) => (
+                    <div key={doc.id} className="bg-white p-5 rounded-[28px] shadow-[0_8px_25px_rgba(0,0,0,0.04)] border border-slate-100 flex gap-5 items-center cursor-pointer interactive-card animate-fade-up" style={{ animationDelay: `${i * 100}ms` }}>
                         <div className="w-[84px] h-[84px] bg-indigo-50 rounded-[22px] flex items-center justify-center text-primary relative overflow-hidden shrink-0">
                             <i className="ph-fill ph-user-circle text-5xl"></i>
                         </div>
                         <div className="flex-1">
-                            <h4 className="font-extrabold text-xl text-slate-900">Dr. Michael Chen</h4>
-                            <p className="text-sm font-medium text-slate-500 mb-3">Neurologist • City Hospital</p>
+                            <h4 className="font-extrabold text-xl text-slate-900">{doc.name}</h4>
+                            <p className="text-sm font-medium text-slate-500 mb-3">{doc.spec} • {doc.clinic}</p>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500 bg-amber-50 px-2 py-1.5 rounded-lg">
-                                    <i className="ph-fill ph-star"></i> 4.9
+                                    <i className="ph-fill ph-star"></i> {doc.rating}
                                 </div>
-                                <span className="text-xs font-bold text-primary bg-indigo-50 px-3 py-1.5 rounded-lg">$150/hr</span>
+                                <span className="text-xs font-bold text-primary bg-indigo-50 px-3 py-1.5 rounded-lg">{doc.price}</span>
                             </div>
                         </div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+};
+
+const AppointmentsView = ({ user, setView }) => {
+    return (
+        <div className="pb-28 bg-slate-50 min-h-screen">
+            <div className="glass-nav pt-14 pb-4 px-6 sticky top-0 z-20">
+                <h2 className="text-3xl font-extrabold text-slate-900 mb-5 animate-fade-up">Appointments</h2>
+            </div>
+
+            <div className="p-6 flex flex-col items-center justify-center mt-20 text-center animate-fade-up delay-100">
+                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <i className="ph-duotone ph-calendar-blank text-6xl text-indigo-300"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">No upcoming appointments</h3>
+                <p className="text-slate-500 font-medium mb-8 max-w-[250px]">You don't have any appointments scheduled with our specialists yet.</p>
+
+                <button onClick={() => setView('doctors')} className="gradient-primary text-white px-8 py-4 rounded-2xl font-bold shadow-[0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.4)] interactive-card transition-all">
+                    Find a Doctor
+                </button>
             </div>
         </div>
     );
