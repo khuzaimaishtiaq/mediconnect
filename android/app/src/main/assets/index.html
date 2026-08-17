@@ -509,13 +509,11 @@
                                         const localAppts = JSON.parse(localStorage.getItem('mediconnect_appts') || '[]');
                                         localAppts.push({ ...appt, id: Date.now() });
                                         localStorage.setItem('mediconnect_appts', JSON.stringify(localAppts));
-                                        alert('Table missing in Supabase! Saved appointment to local offline storage instead as fallback.');
                                         setView('appointments');
                                         return;
                                     }
 
                                     if (res.error) throw res.error;
-                                    alert('Appointment Booked Successfully!');
                                     setView('appointments');
                                 } catch (e) {
                                     alert('Booking failed: ' + e.message);
@@ -532,22 +530,58 @@
         };
 
         const AppointmentsView = ({ user, setView }) => {
+            const [localAppts, setLocalAppts] = useState([]);
+
+            useEffect(() => {
+                const fetched = JSON.parse(localStorage.getItem('mediconnect_appts') || '[]');
+                setLocalAppts(fetched);
+            }, []);
+
             return (
                 <div className="pb-28 bg-slate-50 min-h-screen">
                     <div className="glass-nav pt-14 pb-4 px-6 sticky top-0 z-20">
                         <h2 className="text-3xl font-extrabold text-slate-900 mb-5 animate-fade-up">Appointments</h2>
                     </div>
 
-                    <div className="p-6 flex flex-col items-center justify-center mt-20 text-center animate-fade-up delay-100">
-                        <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                            <i className="ph-duotone ph-calendar-blank text-6xl text-indigo-300"></i>
-                        </div>
-                        <h3 className="text-2xl font-bold text-slate-800 mb-2">No upcoming appointments</h3>
-                        <p className="text-slate-500 font-medium mb-8 max-w-[250px]">You don't have any appointments scheduled with our specialists yet.</p>
+                    <div className="p-6">
+                        {localAppts.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center mt-20 text-center animate-fade-up delay-100">
+                                <div className="w-32 h-32 bg-indigo-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                                    <i className="ph-duotone ph-calendar-blank text-6xl text-indigo-300"></i>
+                                </div>
+                                <h3 className="text-2xl font-bold text-slate-800 mb-2">No upcoming appointments</h3>
+                                <p className="text-slate-500 font-medium mb-8 max-w-[250px]">You don't have any appointments scheduled with our specialists yet.</p>
 
-                        <button onClick={() => setView('doctors')} className="gradient-primary text-white px-8 py-4 rounded-2xl font-bold shadow-[0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.4)] interactive-card transition-all">
-                            Find a Doctor
-                        </button>
+                                <button onClick={() => setView('doctors')} className="gradient-primary text-white px-8 py-4 rounded-2xl font-bold shadow-[0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.4)] interactive-card transition-all">
+                                    Find a Doctor
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-4 animate-fade-up delay-100">
+                                {localAppts.map((appt, i) => (
+                                    <div key={i} className="bg-white p-5 rounded-[28px] shadow-[0_8px_25px_rgba(0,0,0,0.04)] border border-slate-100 flex flex-col gap-4 relative overflow-hidden interactive-card">
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-indigo-50 to-transparent rounded-bl-full -z-0"></div>
+                                        <div className="flex justify-between items-start relative z-10">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-[60px] h-[60px] bg-indigo-100 rounded-2xl flex items-center justify-center text-primary shrink-0 relative overflow-hidden">
+                                                    <i className="ph-fill ph-user-circle text-4xl"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 className="font-extrabold text-lg text-slate-900">{appt.doctor_name || 'Medical Specialist'}</h4>
+                                                    <p className="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded-md inline-block mt-1">
+                                                        <i className="ph-fill ph-clock text-primary mr-1"></i>
+                                                        {appt.appt_date} • {appt.appt_time}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide flex items-center gap-1 shadow-sm border border-emerald-100">
+                                                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div> Confirmed
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             );
