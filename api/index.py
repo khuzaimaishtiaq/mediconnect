@@ -92,4 +92,9 @@ def get_appointments(user_id: str):
 # Root check for Vercel
 @app.get("/api")
 def api_root():
-    return {"status": "MediConnect API is running."}
+    return {"status": "MediConnect API is running on Vercel."}
+
+# Local Development Web Server serving
+if not os.getenv("VERCEL"):
+    STATIC_DIR = os.path.dirname(os.path.dirname(__file__))
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
