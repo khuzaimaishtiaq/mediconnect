@@ -446,6 +446,8 @@
         };
 
         const BookAppointmentView = ({ doctor, setView }) => {
+            const [selectedDate, setSelectedDate] = useState(1);
+
             return (
                 <div className="pb-28 bg-slate-50 min-h-screen">
                     <div className="glass-nav pt-14 pb-4 px-6 sticky top-0 z-20 flex items-center gap-4">
@@ -479,9 +481,9 @@
                             <h3 className="text-lg font-bold text-slate-800 mb-4 animate-fade-up delay-200">Select Date</h3>
                             <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-6 animate-fade-up delay-200">
                                 {['Mon 12', 'Tue 13', 'Wed 14', 'Thu 15'].map((d, i) => (
-                                    <div key={i} className={`min-w-[70px] py-4 rounded-[20px] flex flex-col items-center justify-center cursor-pointer transition-all hover:-translate-y-1 ${i === 1 ? 'gradient-primary text-white shadow-[0_8px_20px_rgba(99,102,241,0.3)]' : 'bg-white text-slate-600 border border-slate-200 shadow-sm hover:shadow-md'}`}>
+                                    <div key={i} onClick={() => setSelectedDate(i)} className={`min-w-[70px] py-4 rounded-[20px] flex flex-col items-center justify-center cursor-pointer transition-all hover:-translate-y-1 ${i === selectedDate ? 'gradient-primary text-white shadow-[0_8px_20px_rgba(99,102,241,0.3)]' : 'bg-white text-slate-600 border border-slate-200 shadow-sm hover:shadow-md'}`}>
                                         <span className="text-[11px] font-bold uppercase mb-1">{d.split(' ')[0]}</span>
-                                        <span className={`text-xl font-extrabold ${i === 1 ? 'text-white' : 'text-slate-800'}`}>{d.split(' ')[1]}</span>
+                                        <span className={`text-xl font-extrabold ${i === selectedDate ? 'text-white' : 'text-slate-800'}`}>{d.split(' ')[1]}</span>
                                     </div>
                                 ))}
                             </div>
