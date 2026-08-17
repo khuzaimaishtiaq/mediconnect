@@ -199,7 +199,7 @@
                     {currentView === 'auth' && <AuthView />}
                     {currentView === 'home' && <HomeView user={user} setView={setCurrentView} />}
                     {currentView === 'doctors' && <DoctorsDirectory setView={setCurrentView} onSelect={setSelectedDoctor} />}
-                    {currentView === 'bookAppointment' && <BookAppointmentView doctor={selectedDoctor} setView={setCurrentView} />}
+                    {currentView === 'bookAppointment' && <BookAppointmentView user={user} doctor={selectedDoctor} setView={setCurrentView} />}
                     {currentView === 'appointments' && <AppointmentsView user={user} setView={setCurrentView} />}
                     {currentView === 'profile' && <ProfileView user={user} setView={setCurrentView} />}
 
@@ -445,7 +445,7 @@
             );
         };
 
-        const BookAppointmentView = ({ doctor, setView }) => {
+        const BookAppointmentView = ({ user, doctor, setView }) => {
             const [selectedDate, setSelectedDate] = useState(1);
 
             return (
