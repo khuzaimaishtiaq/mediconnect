@@ -492,20 +492,33 @@
                                 try {
                                     if (!user) throw new Error("Must be logged in to book.");
                                     const dateStr = ['Mon 12', 'Tue 13', 'Wed 14', 'Thu 15'][selectedDate];
-                                    const res = await supabase.from('appointments').insert([{
+                                    const appt = {
                                         patient_id: user.id,
-                                        doctor_id: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+                                        doctor_id: doctor.id,
+                                        doctor_name: doctor.name,
                                         consult_type: 'in-person',
                                         appt_date: `2026-08-${dateStr.split(' ')[1]}`,
                                         appt_time: '10:00:00',
-                                        patient_phone: '000-000-0000',
-                                        status: 'pending'
-                                    }]);
+                                        status: 'confirmed'
+                                    };
+
+                                    const res = await supabase.from('appointments').insert([appt]);
+
+                                    // PGRST205 means table doesn't exist
+                                    if (res.error && res.error.code === 'PGRST205') {
+                                        const localAppts = JSON.parse(localStorage.getItem('mediconnect_appts') || '[]');
+                                        localAppts.push({ ...appt, id: Date.now() });
+                                        localStorage.setItem('mediconnect_appts', JSON.stringify(localAppts));
+                                        alert('Table missing in Supabase! Saved appointment to local offline storage instead as fallback.');
+                                        setView('appointments');
+                                        return;
+                                    }
+
                                     if (res.error) throw res.error;
                                     alert('Appointment Booked Successfully!');
                                     setView('appointments');
                                 } catch (e) {
-                                    alert('Booking failed: ' + e.message + '\n\nPlease explicitly execute the mediconnect-database.sql file in your Supabase SQL Editor to initialize the database tables!');
+                                    alert('Booking failed: ' + e.message);
                                 }
                             }} className="w-full mt-6 py-4.5 gradient-primary text-white rounded-2xl text-lg font-bold shadow-[0_8px_20px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_25px_rgba(99,102,241,0.4)] interactive-card animate-fade-up delay-300 flex items-center justify-center gap-2 relative overflow-hidden group">
                                 <span className="relative z-10">Confirm Booking</span>
